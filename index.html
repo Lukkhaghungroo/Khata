@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#5b5bf0">
+<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png">
+<title>Loan Ledger</title>
+<style>
+:root{--bg:#f4f5fb;--c:#fff;--bd:#e6e8f0;--tx:#151a2d;--mu:#6b7390;--ac:#5b5bf0;--a2:#06b6d4;--red:#e5484d;--grn:#12a36b;--amb:#d98a0b;--sh:0 6px 24px #1b24470f}
+@media(prefers-color-scheme:dark){:root{--bg:#0b0d17;--c:#151828;--bd:#232842;--tx:#eceefa;--mu:#8e96b8;--ac:#7c83ff;--a2:#22d3ee;--red:#ff7a7f;--grn:#3dd6a0;--amb:#f2b24c;--sh:none}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 -apple-system,system-ui,"Segoe UI",Roboto,Arial,sans-serif;padding-bottom:110px}
+.w{max-width:560px;margin:0 auto;padding:18px 16px}
+h1{font-size:22px;margin:0;letter-spacing:-.3px}h2{margin:0 0 6px;font-size:20px}h3{font-size:13px;color:var(--mu);text-transform:uppercase;letter-spacing:.8px;margin:22px 0 10px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.ib{background:var(--c);border:1px solid var(--bd);border-radius:12px;width:40px;height:40px;font-size:18px;color:var(--tx)}
+.hero{background:linear-gradient(135deg,var(--ac),var(--a2));color:#fff;border-radius:22px;padding:20px;box-shadow:var(--sh)}
+.hero small{opacity:.85}.hero b{display:block;font-size:34px;letter-spacing:-1px;margin:2px 0 12px}
+.pb{height:8px;background:#fff4;border-radius:8px;overflow:hidden;margin-bottom:8px}.pb i{display:block;height:100%;background:#fff;border-radius:8px}
+.sum{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.t{background:var(--c);border:1px solid var(--bd);border-radius:16px;padding:12px 14px;box-shadow:var(--sh)}
+.t small{color:var(--mu);font-size:12px;display:block}.t b{font-size:18px;letter-spacing:-.3px}
+.red{color:var(--red)}.amb{color:var(--amb)}.grn{color:var(--grn)}
+input,select,textarea,button{font:inherit;color:var(--tx)}
+input,select{width:100%;padding:12px;border:1px solid var(--bd);border-radius:12px;background:var(--c);outline:0}
+input:focus,select:focus{border-color:var(--ac)}
+.chips{display:flex;gap:8px;margin:10px 0 14px;overflow-x:auto}
+.chip{padding:7px 14px;border:1px solid var(--bd);border-radius:20px;background:var(--c);white-space:nowrap;font-size:13px}
+.chip.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.row{background:var(--c);border:1px solid var(--bd);border-radius:16px;padding:13px;margin-bottom:9px;display:flex;gap:12px;align-items:center;box-shadow:var(--sh)}
+.row>div:nth-child(2){flex:1;min-width:0}.n{font-weight:600}.s{color:var(--mu);font-size:13px}.r{text-align:right}
+.av{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--ac),var(--a2));color:#fff;display:grid;place-items:center;font-weight:700}
+.b{font-size:11px;font-weight:700;padding:2px 9px;border-radius:10px;background:#8883}
+.b.Overdue{color:var(--red)}.b.Active{color:var(--amb)}.b.Closed{color:var(--grn)}
+.em{color:var(--mu);text-align:center;padding:18px}
+.fab{position:fixed;right:18px;bottom:92px;border:0;border-radius:30px;padding:15px 22px;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--ac),var(--a2));box-shadow:0 8px 24px #5b5bf055}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;gap:6px;padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--c) 85%,transparent);backdrop-filter:blur(14px);border-top:1px solid var(--bd)}
+nav a{flex:1;max-width:160px;text-align:center;font-size:11px;color:var(--mu);padding:6px;border-radius:12px}
+nav a svg{display:block;margin:0 auto 2px;width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+nav a.on{color:var(--ac);background:#5b5bf014}
+dialog{border:0;padding:0;margin:auto auto 0;width:100%;max-width:560px;max-height:94vh;border-radius:24px 24px 0 0;background:var(--bg);color:var(--tx);animation:up .25s}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+dialog::backdrop{background:#0009;backdrop-filter:blur(3px)}
+#sc,#rcc{padding:18px 18px 30px}
+label{display:block;font-size:12px;color:var(--mu);margin:12px 0 4px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{padding:11px 16px;border-radius:12px;border:1px solid var(--bd);background:var(--c);cursor:pointer;font-weight:600;font-size:14px}
+.btn.p{background:linear-gradient(135deg,var(--ac),var(--a2));color:#fff;border:0}.btn.d{color:var(--red)}
+.bar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.kv{display:flex;justify-content:space-between;gap:14px;padding:8px 0;border-bottom:1px solid var(--bd)}.kv span:first-child{color:var(--mu);white-space:nowrap}.kv span:last-child{text-align:right}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px 3px;border-bottom:1px solid var(--bd);text-align:left}th{color:var(--mu);font-size:11px}td:nth-child(n+2),th:nth-child(n+2){text-align:right}
+.big{font-size:32px;font-weight:700;letter-spacing:-1px;margin:8px 0 0}.pv{font-size:13px;color:var(--mu);margin-top:10px}
+#ri{width:100%;border-radius:12px;border:1px solid var(--bd);background:#fff}
+#pr{display:none}
+@media print{body>*:not(#pr){display:none!important}#pr{display:block}#pr img{width:100%}dialog{display:none!important}}
+</style></head><body>
+<div class="w"><div class="top"><h1 id="ttl">Overview</h1><button class="ib" onclick="setts()">⚙</button></div><div id="v"></div></div>
+<button class="fab" id="fab">+ Add</button>
+<nav>
+<a data-t="home" onclick="go('home')"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg>Dashboard</a>
+<a data-t="bor" onclick="go('bor')"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Borrowers</a>
+<a data-t="loans" onclick="go('loans')"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Loans</a>
+</nav>
+<dialog id="sheet"><div id="sc"></div></dialog>
+<dialog id="rcd"><div id="rcc"><img id="ri" alt="Receipt">
+<div class="bar"><button class="btn p" onclick="shr()">Share PNG</button><button class="btn" onclick="prt()">Print</button><button class="btn" onclick="dwn()">Save</button><button class="btn" onclick="$('#rcd').close()" style="margin-left:auto">Close</button></div></div></dialog>
+<div id="pr"><img id="pri" alt=""></div>
+<input type="file" id="imp" accept=".json" hidden onchange="imp(this)">
+
+<script>
+const $=s=>document.querySelector(s),K='lend.v2',sh=$('#sheet');
+let D;try{D=JSON.parse(localStorage.getItem(K))}catch(e){}
+D=D&&D.b?D:{b:[],l:[],n:0,s:{biz:'',phone:'',rd:3}};
+let tab='home',fl='All',q='',C=()=>sh.close(),CV,FN;
+const sv=()=>localStorage.setItem(K,JSON.stringify(D));
+const uid=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+const B=id=>D.b.find(x=>x.id===id)||{name:'?'},Ln=id=>D.l.find(x=>x.id===id);
+const inr=n=>(n<0?'-':'')+'₹'+Math.abs(Math.round(n)).toLocaleString('en-IN');
+const today=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fd=d=>new Date(d+'T00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+const no=l=>'LN-'+String(l.no).padStart(4,'0'),sp=l=>l.pays.slice().sort((a,b)=>a.d.localeCompare(b.d));
+function addM(ds,m){const[y,mo,d]=ds.split('-').map(Number),t=new Date(Date.UTC(y,mo-1+m,1)),
+ last=new Date(Date.UTC(t.getUTCFullYear(),t.getUTCMonth()+1,0)).getUTCDate();t.setUTCDate(Math.min(d,last));return t.toISOString().slice(0,10)}
+function calc(l){const t=l.per==='y'?l.months/12:l.months,int=l.amt*l.rate/100*t,tot=l.amt+int+(l.chg||0),paid=l.pays.reduce((s,p)=>s+p.a,0),
+ bal=tot-paid,due=addM(l.date,l.months),dtd=Math.round((new Date(due)-new Date(today()))/864e5),
+ st=Math.round(bal)<=0?'Closed':dtd<0?'Overdue':'Active';return{int,tot,paid,bal,due,dtd,st,od:st==='Overdue'?-dtd:0}}
+const tag=c=>`<span class="b ${c.st}">${c.st}${c.od?' '+c.od+'d':''}</span>`;
+const T=(a,b,c='')=>`<div class="t"><small>${a}</small><b class="${c}">${b}</b></div>`;
+const f=(id,lab,v,a='')=>`<label>${lab}</label><input id="${id}" value="${esc(v)}" ${a}>`;
+const sel=(id,lab,o,v,a='')=>`<label>${lab}</label><select id="${id}" ${a}>${o.map(x=>`<option value="${x[0]}" ${x[0]===v?'selected':''}>${x[1]}</option>`).join('')}</select>`;
+const MODES=['Cash','UPI','Bank transfer','Cheque'].map(x=>[x,x]);
+function S(h,back){$('#sc').innerHTML=h;C=back||(()=>sh.close());if(!sh.open)sh.showModal();sh.scrollTop=0}
+sh.addEventListener('close',render);sh.addEventListener('click',e=>{if(e.target===sh)sh.close()});
+
+/* ---------- views ---------- */
+function alerts(){return D.l.map(l=>({l,c:calc(l)})).filter(x=>x.c.st==='Overdue'||(x.c.st==='Active'&&x.c.dtd<=D.s.rd)).sort((a,b)=>a.c.dtd-b.c.dtd)}
+function lcard(l,c,nm){return`<div class="row" onclick="lDet('${l.id}')"><div class="av">${esc(B(l.bid).name[0]||'?')}</div><div><div class="n">${esc(B(l.bid).name)}</div>
+ <div class="s">${no(l)} · ${inr(l.amt)} · due ${fd(c.due)}</div></div><div class="r"><b>${inr(Math.max(c.bal,0))}</b><div>${tag(c)}</div></div></div>`}
+function home(){const c=D.l.map(l=>({l,c:calc(l)})),S=f=>c.reduce((s,x)=>s+f(x.c,x.l),0),tot=S(a=>a.tot),pd=S(a=>a.paid),
+ out=S(a=>Math.max(a.bal,0)),p=tot?Math.min(100,pd/tot*100):0,al=alerts(),act=c.filter(x=>x.c.st!=='Closed').length;
+ return`<div class="hero"><small>Total outstanding</small><b>${inr(out)}</b><div class="pb"><i style="width:${p}%"></i></div><small>${p.toFixed(0)}% of ${inr(tot)} collected</small></div>
+ <div class="sum">${T('Disbursed',inr(S((a,l)=>l.amt)))}${T('Collected',inr(pd))}${T('Overdue',inr(S(a=>a.st==='Overdue'?a.bal:0)),'red')}
+ ${T('Due in 7 days',inr(S(a=>a.st==='Active'&&a.dtd<=7?a.bal:0)),'amb')}${T('Open loans',act+' · '+D.b.length+' borrowers')}${T('Interest receivable',inr(S(a=>a.int)))}</div>
+ ${'Notification'in window&&Notification.permission==='default'?`<div class="t" style="margin-top:12px"><b style="font-size:15px">Get due-date alerts</b><div class="s">Phone notification when loans are due or overdue.</div><div class="bar"><button class="btn p" onclick="askN()">Enable alerts</button></div></div>`:''}
+ <h3>Needs attention</h3>${al.length?al.map(x=>`<div class="row" onclick="lDet('${x.l.id}')"><div class="av">${esc(B(x.l.bid).name[0])}</div><div><div class="n">${esc(B(x.l.bid).name)}</div>
+ <div class="s ${x.c.st==='Overdue'?'red':'amb'}">${x.c.st==='Overdue'?'Overdue by '+x.c.od+' days':x.c.dtd?'Due in '+x.c.dtd+' days':'Due today'}</div></div><b>${inr(x.c.bal)}</b></div>`).join(''):'<div class="em">All clear ✓</div>'}`}
+function bl(){const v=D.b.filter(b=>b.name.toLowerCase().includes(q)).sort((a,b)=>a.name.localeCompare(b.name));
+ return v.length?v.map(b=>{const c=D.l.filter(l=>l.bid===b.id).map(l=>calc(l)),o=c.reduce((s,x)=>s+Math.max(x.bal,0),0),od=c.some(x=>x.st==='Overdue');
+ return`<div class="row" onclick="bDet('${b.id}')"><div class="av">${esc(b.name[0])}</div><div><div class="n">${esc(b.name)}</div><div class="s">${esc(b.phone||'No phone')} · ${c.length} loan${c.length==1?'':'s'}</div></div>
+ <div class="r"><b>${inr(o)}</b>${od?'<div><span class="b Overdue">Overdue</span></div>':''}</div></div>`}).join(''):'<div class="em">No borrowers yet. Tap “+ Add”.</div>'}
+function bor(){return`<input placeholder="Search borrowers…" oninput="q=this.value.toLowerCase();$('#lst').innerHTML=bl()"><div style="height:12px"></div><div id="lst">${bl()}</div>`}
+function ll(){const o={Overdue:0,Active:1,Closed:2},v=D.l.map(l=>({l,c:calc(l)})).filter(x=>(fl==='All'||x.c.st===fl)&&B(x.l.bid).name.toLowerCase().includes(q)).sort((a,b)=>o[a.c.st]-o[b.c.st]||a.c.due.localeCompare(b.c.due));
+ return v.length?v.map(x=>lcard(x.l,x.c)).join(''):'<div class="em">No loans here.</div>'}
+function loans(){return`<input placeholder="Search by borrower…" oninput="q=this.value.toLowerCase();$('#lst').innerHTML=ll()"><div class="chips">${['All','Active','Overdue','Closed'].map(s=>`<span class="chip ${fl===s?'on':''}" onclick="fl='${s}';render()">${s}</span>`).join('')}</div><div id="lst">${ll()}</div>`}
+function render(){$('#v').innerHTML=({home,bor,loans})[tab]();$('#ttl').textContent={home:'Overview',bor:'Borrowers',loans:'Loans'}[tab];
+ document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.dataset.t===tab));$('#fab').textContent=tab==='bor'?'+ Borrower':'+ Loan';$('#fab').onclick=()=>tab==='bor'?bForm():lForm()}
+const go=t=>{tab=t;q='';fl='All';render();scrollTo(0,0)};
+
+/* ---------- borrower ---------- */
+function bForm(id){const b=id?B(id):{};
+ S(`<h2>${id?'Edit':'New'} borrower</h2><form onsubmit="bSave(event,'${id||''}')">${f('bn','Full name *',b.name,'required')}
+ <div class="g2">${f('bp','Phone',b.phone,'type=tel')}${f('bi','ID proof (type + last 4)',b.idp)}</div>${f('ba','Address',b.addr)}
+ <div class="g2">${f('bg','Usual guarantor',b.gname)}${f('bgp','Guarantor phone',b.gphone,'type=tel')}</div>${f('bo','Notes',b.notes)}
+ <div class="bar"><button class="btn p">Save</button><button type="button" class="btn" onclick="C()">Cancel</button></div></form>`,id?()=>bDet(id):0)}
+function bSave(e,id){e.preventDefault();const v=i=>$('#'+i).value.trim(),d={name:v('bn'),phone:v('bp'),idp:v('bi'),addr:v('ba'),gname:v('bg'),gphone:v('bgp'),notes:v('bo')};
+ if(id)Object.assign(B(id),d);else{id=uid('B');D.b.push({id,...d})}sv();bDet(id)}
+function bDet(id){const b=B(id),ls=D.l.filter(l=>l.bid===id),kv=(a,x)=>x?`<div class="kv"><span>${a}</span><span>${esc(x)}</span></div>`:'';
+ S(`<h2>${esc(b.name)}</h2>${b.phone?`<a href="tel:${esc(b.phone)}" style="color:var(--ac)">${esc(b.phone)}</a>`:''}
+ <div style="margin-top:8px">${kv('Address',b.addr)}${kv('ID proof',b.idp)}${kv('Usual guarantor',[b.gname,b.gphone].filter(Boolean).join(' · '))}${kv('Notes',b.notes)}</div>
+ <div class="bar"><button class="btn p" onclick="lForm('${id}')">+ New loan</button><button class="btn" onclick="bForm('${id}')">Edit</button><button class="btn d" onclick="bDel('${id}')">Delete</button></div>
+ <h3>Loans (${ls.length})</h3>${ls.length?ls.map(l=>lcard(l,calc(l))).join(''):'<div class="em">No loans yet</div>'}`)}
+function bDel(id){if(D.l.some(l=>l.bid===id))return alert('Delete this borrower’s loans first.');if(!confirm('Delete this borrower?'))return;D.b=D.b.filter(b=>b.id!==id);sv();sh.close()}
+
+/* ---------- loan ---------- */
+function lForm(bid,id){if(!D.b.length)return bForm();const l=id?Ln(id):{};bid=bid||l.bid||D.b[0].id;
+ S(`<h2>${id?'Edit':'New'} loan</h2><form onsubmit="lSave(event,'${id||''}')">
+ ${sel('lb','Borrower',D.b.map(b=>[b.id,esc(b.name)]),bid,id?'disabled':'onchange=fill()')}
+ <div class="g2">${f('la','Loan amount ₹ *',l.amt,'type=number min=1 step=any required oninput=pv()')}${f('ld','Disbursed on *',l.date||today(),'type=date required oninput=pv()')}
+ ${f('lr','Interest % *',l.rate,'type=number min=0 step=any required oninput=pv()')}${sel('lp','Rate per',[['m','Month'],['y','Year']],l.per||'m','onchange=pv()')}
+ ${f('lt','Tenure (months) *',l.months,'type=number min=1 step=1 required oninput=pv()')}${sel('lm','Disbursed via',MODES,l.mode||'Cash')}</div>
+ <div class="pv" id="pv"></div>${f('lu','Purpose',l.purpose)}
+ <div class="g2">${f('lc','Collateral',l.collateral)}${f('lcv','Collateral value ₹',l.cval||'','type=number step=any')}${f('lg','Guarantor',l.gname)}${f('lgp','Guarantor phone',l.gphone,'type=tel')}
+ ${f('ldc','Document / pronote no.',l.docs)}${f('lch','Other charges ₹',l.chg||'','type=number step=any oninput=pv()')}</div>${f('ln','Notes',l.notes)}
+ <div class="bar"><button class="btn p">Save</button><button type="button" class="btn" onclick="C()">Cancel</button></div></form>`,id?()=>lDet(id):0);
+ if(!id)fill();else pv()}
+function fill(){const b=B($('#lb').value),p=D.l.filter(x=>x.bid===b.id).pop()||{};
+ $('#lr').value=p.rate||'';$('#lp').value=p.per||'m';$('#lt').value=p.months||'';$('#lg').value=p.gname||b.gname||'';$('#lgp').value=p.gphone||b.gphone||'';pv()}
+function pv(){const a=+$('#la').value,r=+$('#lr').value,m=+$('#lt').value,d=$('#ld').value,ch=+$('#lch').value||0;
+ $('#pv').textContent=a&&m&&d?(i=>`Interest ${inr(i)} · Total receivable ${inr(a+i+ch)} · Due ${fd(addM(d,m))}`)(a*r/100*($('#lp').value==='y'?m/12:m)):''}
+function lSave(e,id){e.preventDefault();const v=i=>$('#'+i).value.trim(),d={bid:$('#lb').value,amt:+v('la'),date:v('ld'),rate:+v('lr'),per:v('lp'),months:+v('lt'),mode:v('lm'),purpose:v('lu'),
+ collateral:v('lc'),cval:+v('lcv')||0,gname:v('lg'),gphone:v('lgp'),docs:v('ldc'),chg:+v('lch')||0,notes:v('ln')};
+ if(id)Object.assign(Ln(id),d);else{id=uid('L');D.l.push({id,no:++D.n,pays:[],...d})}sv();lDet(id)}
+function lDet(id){const l=Ln(id),c=calc(l),b=B(l.bid);let run=c.tot;const kv=(a,x)=>x?`<div class="kv"><span>${a}</span><span>${x}</span></div>`:'';
+ const ps=sp(l).map(p=>{run-=p.a;return`<tr><td>${fd(p.d)}<div class="s">${esc(p.mode||'')}</div></td><td>${inr(p.a)}</td><td>${inr(run)}</td><td><a onclick="rP('${id}','${p.id}')" style="color:var(--ac)">Receipt</a> <a onclick="dP('${id}','${p.id}')" class="red">✕</a></td></tr>`}).join('');
+ S(`<div style="display:flex;justify-content:space-between"><div><h2 onclick="bDet('${l.bid}')" style="color:var(--ac)">${esc(b.name)}</h2><span class="s">${no(l)}</span></div>${tag(c)}</div>
+ <div class="big ${c.bal>0?'':'grn'}">${inr(c.bal)}</div><div class="s">balance of ${inr(c.tot)} receivable</div>
+ <div style="margin-top:10px">${kv('Loan amount',inr(l.amt))}${kv('Interest',`${l.rate}% per ${l.per==='y'?'year':'month'} × ${l.months} mo = ${inr(c.int)}`)}${kv('Other charges',l.chg?inr(l.chg):'')}
+ ${kv('Disbursed',fd(l.date)+(l.mode?' · '+esc(l.mode):''))}${kv('Due date',fd(c.due))}${kv('Repaid',inr(c.paid))}${kv('Purpose',esc(l.purpose))}
+ ${kv('Collateral',esc(l.collateral)+(l.cval?' ('+inr(l.cval)+')':''))}${kv('Guarantor',esc([l.gname,l.gphone].filter(Boolean).join(' · ')))}${kv('Documents',esc(l.docs))}${kv('Notes',esc(l.notes))}</div>
+ <h3>Repayments</h3>${ps?`<table><tr><th>Date</th><th>Paid</th><th>Balance</th><th></th></tr>${ps}</table>`:'<div class="s">No payments yet</div>'}
+ <div class="g2" style="margin-top:12px"><input id="pd" type="date" value="${today()}"><input id="pa" type="number" min="1" step="any" placeholder="Amount ₹">
+ <select id="pm">${MODES.map(m=>`<option>${m[0]}</option>`).join('')}</select><input id="pr2" placeholder="Reference (optional)"></div>
+ <div class="bar"><button class="btn p" onclick="aP('${id}')">Record repayment</button>${c.bal>0?`<button class="btn" onclick="$('#pa').value=Math.round(${c.bal})">Full balance</button>`:''}</div>
+ <h3>Receipts & reminders</h3><div class="bar" style="margin-top:0"><button class="btn" onclick="rD('${id}')">Loan receipt</button><button class="btn" onclick="rS('${id}')">Statement</button><button class="btn" onclick="ics([Ln('${id}')])">Calendar reminder</button></div>
+ <div class="bar" style="margin-top:22px"><button class="btn" onclick="lForm('${l.bid}','${id}')">Edit</button><button class="btn d" onclick="lDel('${id}')">Delete</button><button class="btn" onclick="sh.close()" style="margin-left:auto">Close</button></div>`)}
+function aP(id){const a=+$('#pa').value,d=$('#pd').value;if(!(a>0&&d))return alert('Enter date and amount');const p={id:uid('P'),d,a,mode:$('#pm').value,ref:$('#pr2').value.trim()};
+ Ln(id).pays.push(p);sv();lDet(id);rP(id,p.id)}
+function dP(id,pid){if(!confirm('Delete this payment?'))return;const l=Ln(id);l.pays=l.pays.filter(p=>p.id!==pid);sv();lDet(id)}
+function lDel(id){if(!confirm('Delete this loan and its repayments?'))return;D.l=D.l.filter(l=>l.id!==id);sv();sh.close()}
+
+/* ---------- receipts ---------- */
+function mk(title,rn,rows,sg){const W=800,P=48,R=46,H=250+rows.length*R+170,cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d'),F='system-ui,Arial,sans-serif';
+ x.fillStyle='#fff';x.fillRect(0,0,W,H);const g=x.createLinearGradient(0,0,W,0);g.addColorStop(0,'#4338ca');g.addColorStop(1,'#0891b2');x.fillStyle=g;x.fillRect(0,0,W,160);
+ x.fillStyle='#fff';x.font='700 32px '+F;x.fillText(D.s.biz||'Loan Receipt',P,66);x.font='400 20px '+F;x.fillText(D.s.phone||'',P,98);x.font='700 24px '+F;x.fillText(title.toUpperCase(),P,138);
+ x.textAlign='right';x.font='400 20px '+F;x.fillText('No. '+rn,W-P,66);x.fillText(fd(today()),W-P,98);
+ let y=214;rows.filter(r=>r[1]).forEach(r=>{x.textAlign='left';x.fillStyle='#667085';x.font='400 21px '+F;x.fillText(r[0],P,y);
+  x.textAlign='right';x.fillStyle=r[2]?'#4338ca':'#111827';let s=r[2]?28:22;do{x.font=`${r[2]?700:600} ${s}px ${F}`;s--}while(x.measureText(r[1]).width>W-P*2-230&&s>12);x.fillText(r[1],W-P,y);
+  x.strokeStyle='#eceef4';x.beginPath();x.moveTo(P,y+15);x.lineTo(W-P,y+15);x.stroke();y+=R});
+ y+=70;x.strokeStyle='#98a2b3';[[P,P+270],[W-P-270,W-P]].forEach(a=>{x.beginPath();x.moveTo(a[0],y);x.lineTo(a[1],y);x.stroke()});
+ x.fillStyle='#667085';x.font='400 19px '+F;x.textAlign='left';x.fillText(sg[0],P,y+28);x.textAlign='right';x.fillText(sg[1],W-P,y+28);
+ x.textAlign='center';x.font='400 17px '+F;x.fillText('Computer-generated receipt · Please keep for your records',W/2,H-30);return cv}
+function rc(cv,fn){CV=cv;FN=fn;$('#ri').src=$('#pri').src=cv.toDataURL();$('#rcd').showModal()}
+function shr(){CV.toBlob(b=>{const f=new File([b],FN+'.png',{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f],title:FN}).catch(()=>{});else dwn()})}
+function dwn(){const a=document.createElement('a');a.href=CV.toDataURL();a.download=FN+'.png';a.click()}
+const prt=()=>setTimeout(()=>print(),150);
+const base=l=>[['Borrower',B(l.bid).name],['Phone',B(l.bid).phone],['Loan no.',no(l)]];
+function rD(id){const l=Ln(id),c=calc(l);rc(mk('Loan Disbursement Receipt',no(l),[...base(l),['Date of disbursement',fd(l.date)],['Disbursed via',l.mode],['Loan amount',inr(l.amt),1],
+ ['Interest rate',`${l.rate}% per ${l.per==='y'?'year':'month'} × ${l.months} months`],['Interest',inr(c.int)],['Other charges',l.chg?inr(l.chg):''],['Total receivable',inr(c.tot),1],['Repayment due on',fd(c.due)],
+ ['Purpose',l.purpose],['Collateral',l.collateral+(l.cval?' ('+inr(l.cval)+')':'')],['Guarantor',[l.gname,l.gphone].filter(Boolean).join(' · ')],['Documents',l.docs]],['Lender','Borrower']),'loan-'+no(l))}
+function rP(id,pid){const l=Ln(id),c=calc(l),a=sp(l),i=a.findIndex(p=>p.id===pid),p=a[i],pd=a.slice(0,i+1).reduce((s,x)=>s+x.a,0);
+ rc(mk('Repayment Receipt',no(l).replace('LN','RC')+'-'+(i+1),[...base(l),['Payment date',fd(p.d)],['Mode',p.mode],['Reference',p.ref],['Amount received',inr(p.a),1],['Total receivable',inr(c.tot)],
+ ['Paid till date',inr(pd)],['Balance remaining',inr(c.tot-pd),1],['Due date',fd(c.due)]],['Received by','Paid by']),'repayment-'+no(l)+'-'+(i+1))}
+function rS(id){const l=Ln(id),c=calc(l);rc(mk('Loan Statement',no(l),[...base(l),['Loan amount',inr(l.amt)],['Interest',inr(c.int)],['Total receivable',inr(c.tot),1],['Disbursed',fd(l.date)],['Due date',fd(c.due)],
+ ...sp(l).map((p,i)=>['Paid '+fd(p.d)+(p.mode?' · '+p.mode:''),inr(p.a)]),['Total repaid',inr(c.paid)],['Balance outstanding',inr(c.bal),1]],['Lender','Borrower']),'statement-'+no(l))}
+
+/* ---------- alerts, calendar, settings, backup ---------- */
+function askN(){Notification.requestPermission().then(()=>{render();ntf()})}
+function ntf(){const a=alerts();if(!a.length||!('Notification'in window)||Notification.permission!=='granted'||localStorage.getItem('lend.n')===today())return;
+ localStorage.setItem('lend.n',today());const o=a.filter(x=>x.c.st==='Overdue').length;
+ navigator.serviceWorker&&navigator.serviceWorker.ready.then(r=>r.showNotification('Loan Ledger',{body:(o?o+' overdue · ':'')+(a.length-o)+' due soon',icon:'icon-192.png',badge:'icon-192.png'})).catch(()=>{})}
+function ics(ls){ls=ls.filter(l=>calc(l).st!=='Closed');if(!ls.length)return alert('No open loans.');const z=s=>s.replace(/-/g,''),st=new Date().toISOString().replace(/[-:]/g,'').slice(0,15)+'Z';
+ let o='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//LoanLedger//EN\r\n';
+ ls.forEach(l=>{const c=calc(l),nx=new Date(c.due+'T00:00Z');nx.setUTCDate(nx.getUTCDate()+1);
+  o+=`BEGIN:VEVENT\r\nUID:${l.id}@loanledger\r\nDTSTAMP:${st}\r\nDTSTART;VALUE=DATE:${z(c.due)}\r\nDTEND;VALUE=DATE:${z(nx.toISOString().slice(0,10))}\r\nSUMMARY:Loan due - ${B(l.bid).name} (${no(l)})\r\nDESCRIPTION:Check balance in Loan Ledger\r\n`+
+  'BEGIN:VALARM\r\nTRIGGER:-PT15H\r\nACTION:DISPLAY\r\nDESCRIPTION:Loan due tomorrow\r\nEND:VALARM\r\nBEGIN:VALARM\r\nTRIGGER:PT9H\r\nACTION:DISPLAY\r\nDESCRIPTION:Loan due today\r\nEND:VALARM\r\nEND:VEVENT\r\n'});
+ dl('loan-reminders.ics','text/calendar',o+'END:VCALENDAR')}
+function dl(n,t,x){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([x],{type:t}));a.download=n;a.click()}
+function setts(){S(`<h2>Settings</h2>${f('sb','Business name (shown on receipts)',D.s.biz)}<div class="g2">${f('sp','Business phone',D.s.phone,'type=tel')}${f('sr','Alert days before due',D.s.rd,'type=number min=0')}</div>
+ <div class="bar"><button class="btn p" onclick="sSave()">Save</button></div><h3>Alerts & backup</h3><div class="bar" style="margin-top:0">
+ <button class="btn" onclick="askN()">Enable phone alerts</button><button class="btn" onclick="ics(D.l)">Calendar reminders (all open loans)</button>
+ <button class="btn" onclick="dl('lending-backup-'+today()+'.json','application/json',JSON.stringify(D))">Backup</button><button class="btn" onclick="$('#imp').click()">Restore</button></div>
+ <p class="s">Data lives only in this browser on this device. Back up regularly.</p>`)}
+function sSave(){D.s={biz:$('#sb').value.trim(),phone:$('#sp').value.trim(),rd:+$('#sr').value||0};sv();sh.close()}
+function imp(i){const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.b||!d.l)throw 0;if(confirm('Replace ALL current data with this backup?')){D=d;sv();sh.close();render()}}catch(e){alert('Not a valid backup file')}i.value=''};i.files[0]&&r.readAsText(i.files[0])}
+if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+render();ntf();
+</script></body></html>
