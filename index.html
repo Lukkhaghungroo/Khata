@@ -50,6 +50,15 @@ label{display:block;font-size:12px;color:var(--mu);margin:12px 0 4px}
 table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px 3px;border-bottom:1px solid var(--bd);text-align:left}th{color:var(--mu);font-size:11px}td:nth-child(n+2),th:nth-child(n+2){text-align:right}
 .big{font-size:32px;font-weight:700;letter-spacing:-1px;margin:8px 0 0}.pv{font-size:13px;color:var(--mu);margin-top:10px}
 #ri{width:100%;border-radius:12px;border:1px solid var(--bd);background:#fff}
+.cal{background:var(--c);border:1px solid var(--bd);border-radius:20px;padding:14px;box-shadow:var(--sh)}
+.cal .hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.cal .hd b{font-size:16px}
+.cal .hd button{background:none;border:0;font-size:24px;color:var(--ac);padding:2px 14px}
+.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}.cg i{font-style:normal;font-size:11px;color:var(--mu);padding:4px 0}
+.cg a{position:relative;padding:10px 0;border-radius:12px;font-size:14px;cursor:pointer}.cg a.t0{background:var(--ac);color:#fff;font-weight:700}
+.cg a u{position:absolute;left:50%;bottom:3px;width:6px;height:6px;margin-left:-3px;border-radius:50%;background:var(--amb)}
+.cg a u.red{background:var(--red)}.cg a u.grn{background:var(--grn)}
+.wa{display:inline-block;background:#25d366;color:#04210f;font-weight:700;font-size:14px;padding:11px 16px;border-radius:12px;text-decoration:none;white-space:nowrap}
+.row .wa{font-size:12px;padding:7px 11px}
 #pr{display:none}
 @media print{body>*:not(#pr){display:none!important}#pr{display:block}#pr img{width:100%}dialog{display:none!important}}
 </style></head><body>
@@ -104,10 +113,44 @@ function home(){const c=D.l.map(l=>({l,c:calc(l)})),S=f=>c.reduce((s,x)=>s+f(x.c
  ${T('Due in 7 days',inr(S(a=>a.st==='Active'&&a.dtd<=7?a.bal:0)),'amb')}${T('Open loans',act+' · '+D.b.length+' borrowers')}${T('Interest receivable',inr(S(a=>a.int)))}</div>
  ${cloudCard()}${'Notification'in window&&Notification.permission==='default'?`<div class="t" style="margin-top:12px"><b style="font-size:15px">Get due-date alerts</b><div class="s">Phone notification when loans are due or overdue.</div><div class="bar"><button class="btn p" onclick="askN()">Enable alerts</button></div></div>`:''}
  <h3>Needs attention</h3>${al.length?al.map(x=>`<div class="row" onclick="lDet('${x.l.id}')"><div class="av">${esc(B(x.l.bid).name[0])}</div><div><div class="n">${esc(B(x.l.bid).name)}</div>
- <div class="s ${x.c.st==='Overdue'?'red':'amb'}">${x.c.st==='Overdue'?'Overdue by '+x.c.od+' days':x.c.dtd?'Due in '+x.c.dtd+' days':'Due today'}</div></div><b>${inr(x.c.bal)}</b></div>`).join(''):'<div class="em">All clear ✓</div>'}`}
+ <div class="s ${x.c.st==='Overdue'?'red':'amb'}">${x.c.st==='Overdue'?'Overdue by '+x.c.od+' days':x.c.dtd?'Due in '+x.c.dtd+' days':'Due today'}</div></div><div class="r"><b>${inr(x.c.bal)}</b><div style="margin-top:6px">${waBtn(x.l)}</div></div></div>`).join(''):'<div class="em">All clear ✓</div>'}<h3>Due calendar</h3>${cal()}`}
 function cloudCard(){const c=window.cloud;
  if(c.st==='out'||c.st==='err')return`<div class="t" style="margin-top:12px"><b style="font-size:15px">Sign in to sync</b><div class="s">${c.st==='err'?'Sync problem ('+esc(c.err)+'). ':''}Sign in with Google so your data is saved to the cloud and appears on every device.</div><div class="bar"><button class="btn p" onclick="cloudIn()">Sign in with Google</button></div></div>`;
  return`<div class="s" style="text-align:center;margin-top:10px">${c.st==='in'?'☁ Synced · '+esc(c.email):'☁ Connecting…'}</div>`}
+let cm=0;
+const DEFTPL=`Dear {name},
+
+This is a gentle reminder from {business} regarding your loan {loan_no}.
+
+Loan amount: {loan_amount}
+Total payable: {total}
+Paid so far: {paid}
+Balance due: {balance}
+Due date: {due_date} ({status})
+
+Kindly arrange the payment by the due date. If you have already paid, please ignore this message.
+
+Thank you,
+{business}
+{business_phone}`;
+function waNum(p){let d=String(p||'').replace(/\D/g,'');if(!d)return'';const cc=String(D.s.cc||'91').replace(/\D/g,'');if(d.length===10)d=cc+d;else if(d.length===11&&d[0]==='0')d=cc+d.slice(1);return d}
+function waMsg(l){const c=calc(l),b=B(l.bid),st=c.st==='Closed'?'fully paid':c.st==='Overdue'?'overdue by '+c.od+' days':c.dtd===0?'due today':c.dtd===1?'due tomorrow':'due in '+c.dtd+' days',
+ v={name:b.name,business:D.s.biz||'Your lender',business_phone:D.s.phone||'',loan_no:no(l),loan_amount:inr(l.amt),interest:inr(c.int),total:inr(c.tot),paid:inr(c.paid),balance:inr(Math.max(c.bal,0)),disbursed:fd(l.date),due_date:fd(c.due),status:st};
+ return(D.s.tpl||DEFTPL).replace(/\{(\w+)\}/g,(m,k)=>k in v?v[k]:m).replace(/[ \t]+\n/g,'\n').trim()}
+function waLink(l){const n=waNum(B(l.bid).phone);return n?`https://wa.me/${n}?text=${encodeURIComponent(waMsg(l))}`:''}
+const waBtn=(l,t='WhatsApp')=>{const h=waLink(l);return h?`<a class="wa" href="${h}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${t}</a>`:''};
+function cal(){const t=today(),d0=new Date(),base=new Date(d0.getFullYear(),d0.getMonth()+cm,1),y=base.getFullYear(),m=base.getMonth(),n=new Date(y,m+1,0).getDate(),mp={};
+ D.l.forEach(l=>{const c=calc(l),o=mp[c.due]||(mp[c.due]={});o[c.st==='Overdue'?'red':c.st==='Active'?'amb':'grn']=1});
+ let h='<span></span>'.repeat(base.getDay());
+ for(let d=1;d<=n;d++){const k=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`,o=mp[k];
+  h+=`<a class="${k===t?'t0':''}" onclick="dayDet('${k}')">${d}${o?`<u class="${o.red?'red':o.amb?'':'grn'}"></u>`:''}</a>`}
+ return`<div class="cal"><div class="hd"><button onclick="cm--;render()">‹</button><b>${base.toLocaleDateString('en-IN',{month:'long',year:'numeric'})}</b><button onclick="cm++;render()">›</button></div>
+ <div class="cg">${[...'SMTWTFS'].map(x=>`<i>${x}</i>`).join('')}${h}</div><div class="s" style="margin-top:8px;text-align:center"><span class="red">●</span> overdue &nbsp; <span class="amb">●</span> due &nbsp; <span class="grn">●</span> paid</div></div>`}
+function dayDet(k){const ls=D.l.filter(l=>calc(l).due===k),ps=[];D.l.forEach(l=>l.pays.forEach(p=>{if(p.d===k)ps.push({l,p})}));
+ S(`<h2>${fd(k)}</h2><h3>Loans due (${ls.length})</h3>${ls.length?ls.map(l=>{const c=calc(l),b=B(l.bid);return`<div class="t" style="margin-bottom:10px"><div style="display:flex;justify-content:space-between"><div><div class="n">${esc(b.name)}</div><div class="s">${no(l)} · balance ${inr(Math.max(c.bal,0))}</div></div>${tag(c)}</div>
+ <div class="bar"><button class="btn" onclick="lDet('${l.id}')">Open</button>${b.phone?`<a class="btn" href="tel:${esc(b.phone)}" style="text-decoration:none">Call</a>`:''}${waBtn(l)}</div></div>`}).join(''):'<div class="s">No loans due this day</div>'}
+ <h3>Received (${ps.length})</h3>${ps.length?ps.map(x=>`<div class="kv" onclick="lDet('${x.l.id}')"><span>${esc(B(x.l.bid).name)} · ${esc(x.p.mode||'')}</span><span>${inr(x.p.a)}</span></div>`).join(''):'<div class="s">No payments this day</div>'}
+ <div class="bar"><button class="btn" onclick="sh.close()" style="margin-left:auto">Close</button></div>`)}
 function bl(){const v=D.b.filter(b=>b.name.toLowerCase().includes(q)).sort((a,b)=>a.name.localeCompare(b.name));
  return v.length?v.map(b=>{const c=D.l.filter(l=>l.bid===b.id).map(l=>calc(l)),o=c.reduce((s,x)=>s+Math.max(x.bal,0),0),od=c.some(x=>x.st==='Overdue');
  return`<div class="row" onclick="bDet('${b.id}')"><div class="av">${esc(b.name[0])}</div><div><div class="n">${esc(b.name)}</div><div class="s">${esc(b.phone||'No phone')} · ${c.length} loan${c.length==1?'':'s'}</div></div>
@@ -165,7 +208,7 @@ function lDet(id){const l=Ln(id),c=calc(l),b=B(l.bid);let run=c.tot;const kv=(a,
  <div class="g2" style="margin-top:12px"><input id="pd" type="date" value="${today()}"><input id="pa" type="number" min="1" step="any" placeholder="Amount ₹">
  <select id="pm">${MODES.map(m=>`<option>${m[0]}</option>`).join('')}</select><input id="pr2" placeholder="Reference (optional)"></div>
  <div class="bar"><button class="btn p" onclick="aP('${id}')">Record repayment</button>${c.bal>0?`<button class="btn" onclick="$('#pa').value=Math.round(${c.bal})">Full balance</button>`:''}</div>
- <h3>Receipts & reminders</h3><div class="bar" style="margin-top:0"><button class="btn" onclick="rD('${id}')">Loan receipt</button><button class="btn" onclick="rS('${id}')">Statement</button><button class="btn" onclick="ics([Ln('${id}')])">Calendar reminder</button></div>
+ <h3>Receipts & reminders</h3><div class="bar" style="margin-top:0"><button class="btn" onclick="rD('${id}')">Loan receipt</button><button class="btn" onclick="rS('${id}')">Statement</button><button class="btn" onclick="ics([Ln('${id}')])">Calendar reminder</button>${waBtn(l,'WhatsApp reminder')}</div>
  <div class="bar" style="margin-top:22px"><button class="btn" onclick="lForm('${l.bid}','${id}')">Edit</button><button class="btn d" onclick="lDel('${id}')">Delete</button><button class="btn" onclick="sh.close()" style="margin-left:auto">Close</button></div>`)}
 function aP(id){const a=+$('#pa').value,d=$('#pd').value;if(!(a>0&&d))return alert('Enter date and amount');const p={id:uid('P'),d,a,mode:$('#pm').value,ref:$('#pr2').value.trim()};
  Ln(id).pays.push(p);sv();lDet(id);rP(id,p.id)}
@@ -210,11 +253,15 @@ function ics(ls){ls=ls.filter(l=>calc(l).st!=='Closed');if(!ls.length)return ale
  dl('loan-reminders.ics','text/calendar',o+'END:VCALENDAR')}
 function dl(n,t,x){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([x],{type:t}));a.download=n;a.click()}
 function setts(){S(`<h2>Settings</h2>${f('sb','Business name (shown on receipts)',D.s.biz)}<div class="g2">${f('sp','Business phone',D.s.phone,'type=tel')}${f('sr','Alert days before due',D.s.rd,'type=number min=0')}</div>
+ ${f('scc','Default country code for phone numbers',D.s.cc||'91','inputmode=numeric')}<label>WhatsApp message template</label>
+ <textarea id="stp" rows="10" style="width:100%;padding:12px;border:1px solid var(--bd);border-radius:12px;background:var(--c);font:inherit;color:var(--tx)">${esc(D.s.tpl||DEFTPL)}</textarea>
+ <div class="s">Placeholders: {name} {business} {business_phone} {loan_no} {loan_amount} {interest} {total} {paid} {balance} {disbursed} {due_date} {status}</div>
+ <div class="bar" style="margin-top:8px"><button class="btn" type="button" onclick="$('#stp').value=DEFTPL">Reset template</button></div>
  <div class="bar"><button class="btn p" onclick="sSave()">Save</button></div><h3>Cloud sync</h3><div class="bar" style="margin-top:0">${window.cloud.st==='in'?`<span class="s" style="align-self:center">Signed in as ${esc(window.cloud.email)}</span><button class="btn" onclick="cloudOut()">Sign out</button>`:`<button class="btn p" onclick="cloudIn()">Sign in with Google</button>`}</div><h3>Alerts & backup</h3><div class="bar" style="margin-top:0">
  <button class="btn" onclick="askN()">Enable phone alerts</button><button class="btn" onclick="ics(D.l)">Calendar reminders (all open loans)</button>
  <button class="btn" onclick="dl('lending-backup-'+today()+'.json','application/json',JSON.stringify(D))">Backup</button><button class="btn" onclick="$('#imp').click()">Restore</button></div>
  <p class="s">Data lives only in this browser on this device. Back up regularly.</p>`)}
-function sSave(){D.s={biz:$('#sb').value.trim(),phone:$('#sp').value.trim(),rd:+$('#sr').value||0};sv();sh.close()}
+function sSave(){D.s={biz:$('#sb').value.trim(),phone:$('#sp').value.trim(),rd:+$('#sr').value||0,cc:$('#scc').value.trim()||'91',tpl:(t=>t&&t!==DEFTPL?t:'')($('#stp').value.trim())};sv();sh.close()}
 function imp(i){const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.b||!d.l)throw 0;if(confirm('Replace ALL current data with this backup?')){D=d;sv();sh.close();render()}}catch(e){alert('Not a valid backup file')}i.value=''};i.files[0]&&r.readAsText(i.files[0])}
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 render();ntf();
